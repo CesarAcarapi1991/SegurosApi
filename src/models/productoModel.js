@@ -93,7 +93,7 @@ const Producto = {
       UPDATE producto
       SET empresa_id=$1, producto=$2, precio=$3, descripcion=$4, formato_certificado=$5,
           edad_minima=$6, edad_maxima=$7, cantidad_beneficiario=$8, estado=$9, usuario_modificacion=$10, fecha_modificacion=NOW()
-      WHERE id=$10
+      WHERE id=$11
       RETURNING *`;
 
     const values = [
