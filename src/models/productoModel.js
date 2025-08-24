@@ -10,15 +10,16 @@ const Producto = {
       descripcion, 
       formato_certificado, 
       edad_minima, 
-      edad_maxima, 
+      edad_maxima,
+      cantidad_beneficiario, 
       estado = 1, 
       usuario_creacion 
     } = data;
 
     const query = `
       INSERT INTO producto
-      (empresa_id, producto, precio, descripcion, formato_certificado, edad_minima, edad_maxima, estado, usuario_creacion)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      (empresa_id, producto, precio, descripcion, formato_certificado, edad_minima, edad_maxima, cantidad_beneficiario, estado, usuario_creacion)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *`;
 
     const values = [
@@ -29,6 +30,7 @@ const Producto = {
       formato_certificado, 
       edad_minima, 
       edad_maxima, 
+      cantidad_beneficiario,
       estado, 
       usuario_creacion
     ];
@@ -82,6 +84,7 @@ const Producto = {
       formato_certificado, 
       edad_minima, 
       edad_maxima, 
+      cantidad_beneficiario,
       estado, 
       usuario_modificacion 
     } = data;
@@ -89,7 +92,7 @@ const Producto = {
     const query = `
       UPDATE producto
       SET empresa_id=$1, producto=$2, precio=$3, descripcion=$4, formato_certificado=$5,
-          edad_minima=$6, edad_maxima=$7, estado=$8, usuario_modificacion=$9, fecha_modificacion=NOW()
+          edad_minima=$6, edad_maxima=$7, cantidad_beneficiario=$8, estado=$9, usuario_modificacion=$10, fecha_modificacion=NOW()
       WHERE id=$10
       RETURNING *`;
 
@@ -101,6 +104,7 @@ const Producto = {
       formato_certificado, 
       edad_minima, 
       edad_maxima, 
+      cantidad_beneficiario,
       estado, 
       usuario_modificacion, 
       id
