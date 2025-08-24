@@ -39,16 +39,16 @@ const Bloque = {
 
   // Actualizar bloque
   update: async (id, data) => {
-    const { id_producto, nro_bloque, titulo_bloque, estado, usuario_creacion } = data;
+    const { id_producto, nro_bloque, titulo_bloque, estado, usuario_modificacion } = data;
 
     const query = `
       UPDATE bloque
       SET id_producto = $1, nro_bloque = $2, titulo_bloque = $3,
-          estado = $4, usuario_creacion = $5, fecha_creacion = NOW()
+          estado = $4, usuario_modificacion = $5, fecha_modificacion = NOW()
       WHERE id = $6
       RETURNING *`;
 
-    const values = [id_producto, nro_bloque, titulo_bloque, estado, usuario_creacion, id];
+    const values = [id_producto, nro_bloque, titulo_bloque, estado, usuario_modificacion, id];
 
     const result = await pool.query(query, values);
     return result.rows[0];
@@ -58,7 +58,7 @@ const Bloque = {
   delete: async (id) => {
     const query = `
       UPDATE bloque
-      SET estado = 0, fecha_creacion = NOW()
+      SET estado = 0, fecha_modificacion = NOW()
       WHERE id = $1
       RETURNING *`;
     const result = await pool.query(query, [id]);
