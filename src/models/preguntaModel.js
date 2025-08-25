@@ -35,16 +35,16 @@ const Pregunta = {
 
   // Actualizar pregunta
   update: async (id, data) => {
-    const { id_bloque, nro_pregunta, titulo_pregunta, tipo, estado, usuario_creacion } = data;
+    const { id_bloque, nro_pregunta, titulo_pregunta, tipo, estado, usuario_modificacion } = data;
 
     const query = `
       UPDATE pregunta
       SET id_bloque = $1, nro_pregunta = $2, titulo_pregunta = $3, tipo = $4,
-          estado = $5, usuario_creacion = $6, fecha_creacion = NOW()
+          estado = $5, usuario_modificacion = $6, fecha_modificacion = NOW()
       WHERE id = $7
       RETURNING *`;
 
-    const values = [id_bloque, nro_pregunta, titulo_pregunta, tipo, estado, usuario_creacion, id];
+    const values = [id_bloque, nro_pregunta, titulo_pregunta, tipo, estado, usuario_modificacion, id];
     const result = await pool.query(query, values);
     return result.rows[0];
   },
@@ -53,7 +53,7 @@ const Pregunta = {
   delete: async (id) => {
     const query = `
       UPDATE pregunta
-      SET estado = 0, fecha_creacion = NOW()
+      SET estado = 0, fecha_modificacion = NOW()
       WHERE id = $1
       RETURNING *`;
     const result = await pool.query(query, [id]);
