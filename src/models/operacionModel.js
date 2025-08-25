@@ -49,7 +49,7 @@ const Operacion = {
       primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
       tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
       fechanacimiento, estadocivil, fechavencimiento, numerocelular,
-      peso, estatura, edad, usuario_creacion
+      peso, estatura, edad, usuario_modificacion
     } = data;
 
     const query = `
@@ -58,7 +58,7 @@ const Operacion = {
           primernombre=$5, segundonombre=$6, primerapellido=$7, segundoapellido=$8, apellidocasada=$9,
           tipodocumento=$10, nrodocumento=$11, complemento=$12, extension=$13, nacionalidad=$14, ocupacion=$15,
           fechanacimiento=$16, estadocivil=$17, fechavencimiento=$18, numerocelular=$19,
-          peso=$20, estatura=$21, edad=$22, usuario_creacion=$23
+          peso=$20, estatura=$21, edad=$22, usuario_modificacion=$23, fecha_modificacion = NOW()
       WHERE id=$24 RETURNING *`;
 
     const values = [
@@ -66,7 +66,7 @@ const Operacion = {
       primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
       tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
       fechanacimiento, estadocivil, fechavencimiento, numerocelular,
-      peso, estatura, edad, usuario_creacion, id
+      peso, estatura, edad, usuario_modificacion, id
     ];
 
     const result = await pool.query(query, values);
