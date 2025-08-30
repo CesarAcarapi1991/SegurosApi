@@ -44,3 +44,18 @@ exports.delete = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.findByFechaEstado = async (req, res) => {
+  try {
+    const { fecha_desde, fecha_hasta, estado } = req.query;
+    const operaciones = await Operacion.findByFechaEstado(fecha_desde, fecha_hasta, estado);
+    res.json({
+      success: true,
+      count: operaciones.length,
+      data: operaciones,
+    });
+    res.json(operaciones);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

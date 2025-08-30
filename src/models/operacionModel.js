@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { findByFechaEstado } = require('../controllers/operacionController');
 
 const Operacion = {
   create: async (data) => {
@@ -77,7 +78,24 @@ const Operacion = {
     const result = await pool.query(`
       UPDATE operacion SET marcabaja=true WHERE id=$1 RETURNING *`, [id]);
     return result.rows[0];
-  }
+  },
+
+  findByFechaEstado: async (fecha_desde, fecha_hasta, estado) => {
+    // Query fija con filtros obligatorios
+    const query = `
+      SELECT *
+      FROM operacion
+      WHERE fecha_creacion BETWEEN $1 AND $2
+        AND estado = $3
+        AND marcabaja = false
+      ORDER BY id
+    `;
+
+    const values = [fecha_desde, fecha_hasta, estado];
+
+    const result = await pool.query(query, values);
+    return result.rows;
+  },
 };
 
 module.exports = Operacion;
