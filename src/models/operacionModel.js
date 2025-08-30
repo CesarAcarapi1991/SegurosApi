@@ -1,5 +1,4 @@
 const pool = require('../config/db');
-const { findByFechaEstado } = require('../controllers/operacionController');
 
 const Operacion = {
   create: async (data) => {
@@ -83,11 +82,30 @@ const Operacion = {
   findByFechaEstado: async (fecha_desde, fecha_hasta, estado) => {
     // Query fija con filtros obligatorios
     const query = `
-      SELECT *
-      FROM operacion
-      WHERE fecha_creacion BETWEEN $1 AND $2
-        AND estado = $3
-        AND marcabaja = false
+      SELECT 
+        a.id,
+        a.nro_poliza,
+        a.id_cliente,
+        c.primernombre || ' ' ||c.segundonombre || ' '  || c.primerapellido || ' ' || c.segundoapellido AS nombre_completo,
+        CASE
+          WHEN c.tipodocumento = 1 THEN c.nrodocumento || c.complemento || ' ' || c.extension
+          WHEN c.tipodocumento !=  1 THEN 'E-' || c.nrodocumento
+          ELSE 'Desconocido'
+        END AS nro_documento,
+        c.fechanacimiento,
+        a.id_seguro_producto,
+        CASE
+          WHEN a.estado = 1 THEN 'Generado'
+          WHEN a.estado = 2 THEN 'Vigente'
+          ELSE 'Desconocido'
+        END AS estado,
+        p.producto
+      FROM operacion a
+      inner join clientes c on a.id_cliente = c.codigocliente
+      inner join producto p on a.id_seguro_producto = sp.id
+      WHERE a.fecha_creacion BETWEEN $1 AND $2
+        AND a.estado = $3
+        AND a.marcabaja = false
       ORDER BY id
     `;
 
