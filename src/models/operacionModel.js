@@ -105,7 +105,7 @@ const Operacion = {
       inner join producto p on a.id_seguro_producto = p.id
       WHERE a.fecha_creacion BETWEEN $1 AND $2
     `;
-    if(estado != '0'){
+    if(estado != 0){
       query = query + ' AND a.estado = $3';
     }
     query = query + ' ORDER BY id';
