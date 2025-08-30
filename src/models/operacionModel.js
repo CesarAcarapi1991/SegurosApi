@@ -102,7 +102,7 @@ const Operacion = {
         p.producto
       FROM operacion a
       inner join clientes c on a.id_cliente = c.codigocliente
-      inner join producto p on a.id_seguro_producto = sp.id
+      inner join producto p on a.id_seguro_producto = p.id
       WHERE a.fecha_creacion BETWEEN $1 AND $2
         AND a.estado = $3
         AND a.marcabaja = false
