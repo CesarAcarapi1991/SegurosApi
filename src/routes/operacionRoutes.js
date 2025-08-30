@@ -9,6 +9,6 @@ router.put('/:id', operacionController.update);
 router.delete('/:id', operacionController.delete);
 
 //filtrar la lista de operaciones
-router.get("/filtrar", operacionController.findByFechaEstado);
+router.get('/filtrar', operacionController.findByFechaEstado);
 
 module.exports = router;
