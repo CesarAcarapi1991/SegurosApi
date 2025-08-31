@@ -36,6 +36,19 @@ const Operacion = {
       throw new Error("No se encontró cliente seleccionado");
     }
 
+    // 2. Buscar el producto para obtener el precio
+    const productoQuery = `
+      SELECT *
+      FROM producto
+      WHERE id = $1
+      LIMIT 1
+    `;
+    const productoResult = await pool.query(productoQuery, [id_seguro_producto]);
+
+    if (productoResult.rows.length === 0) {
+      throw new Error("No se encontró cliente seleccionado");
+    }
+
     const primernombre = clienteResult.rows[0].primernombre;
     const segundonombre = clienteResult.rows[0].segundonombre;
     const primerapellido = clienteResult.rows[0].primerapellido;
@@ -53,6 +66,7 @@ const Operacion = {
     const numerocelular = clienteResult.rows[0].numerocelular;
     const correoelectronico = clienteResult.rows[0].correoelectronico;
     const edad = clienteResult.rows[0].edad;
+    const precio = productoResult.rows[0].precio;
 
     // 2. Insertar en operacion
     const query = `
@@ -61,9 +75,9 @@ const Operacion = {
       primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
       tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
       fechanacimiento, estadocivil, fechavencimiento, numerocelular, correoelectronico,
-      peso, estatura, edad, estado, usuario_creacion
+      peso, estatura, edad, estado, usuario_creacion, precio
     ) VALUES (
-      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25
+      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26
     ) RETURNING *;
   `;
 
@@ -86,7 +100,12 @@ const Operacion = {
   },
 
   findById: async (id) => {
-    const result = await pool.query('SELECT * FROM operacion WHERE id=$1', [id]);
+    const result = await pool.query('SELECT a.*, ' +
+        '1 as cantida,' +
+        'p.producto as producto,' +
+        'FROM operacion a' + 
+        'INNER JOIN producto p ON p.id = a.id_seguro_producto'+
+        'WHERE id=$1', [id]);
     return result.rows[0];
   },
 
