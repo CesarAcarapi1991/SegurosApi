@@ -106,7 +106,7 @@ const Operacion = {
         p.producto as producto
         FROM operacion a
         INNER JOIN producto p ON p.id = a.id_seguro_producto
-        WHERE id=$1`; 
+        WHERE a.id=$1`; 
     const result = await pool.query(query, [id]);
     return result.rows[0];
   },
