@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const cobroController = require('../controllers/cobroController');
 
-router.post('/', cobroController.createEmpresa);
+router.post('/', cobroController.createCobro);
 // router.get('/', cobroController.getEmpresas);
 // router.get('/:id', empresaController.getEmpresaById);
 // router.put('/:id', empresaController.updateEmpresa);
