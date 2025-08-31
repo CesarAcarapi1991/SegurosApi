@@ -86,7 +86,7 @@ const Operacion = {
       primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
       tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
       fechanacimiento, estadocivil, fechavencimiento, numerocelular, correoelectronico,
-      peso, estatura, edad, estado, usuario_creacion
+      peso, estatura, edad, estado, usuario_creacion, precio
     ];
 
     const result = await pool.query(query, values);
@@ -103,7 +103,7 @@ const Operacion = {
 
     let query = `SELECT a.*, 
         1 as cantida,
-        p.producto as producto,
+        p.producto as producto
         FROM operacion a
         INNER JOIN producto p ON p.id = a.id_seguro_producto
         WHERE id=$1`; 
