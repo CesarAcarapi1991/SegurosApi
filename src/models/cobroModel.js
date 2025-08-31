@@ -41,8 +41,6 @@ const Cobro = {
   findById: async (id) => {
 
     let query = `SELECT 
-          a.*, 
-          1 as cantida,
           p.producto as producto,
 
           CASE when c.tipo_pago = 1 THEN 'Caja: Efectivo'
@@ -58,7 +56,7 @@ const Cobro = {
             WHEN cl.tipodocumento = 1 THEN 'Carnet de Identidad'
             ELSE 'Documento Extranjero'
           END AS tipo_documento,
-          COALESCE(c.primernombre, '') || ' ' || COALESCE(c.segundonombre, '') || ' ' || COALESCE(c.primerapellido, '') || ' ' || COALESCE(c.segundoapellido, '') AS nombre_completo,
+          COALESCE(cl.primernombre, '') || ' ' || COALESCE(cl.segundonombre, '') || ' ' || COALESCE(cl.primerapellido, '') || ' ' || COALESCE(cl.segundoapellido, '') AS nombre_completo,
           CASE
             WHEN cl.tipodocumento = 1 THEN cl.nrodocumento || ' ' || COALESCE(cl.complemento, '') || ' - ' || 
             ( CASE  
@@ -88,8 +86,8 @@ const Cobro = {
         FROM cobro c
         INNER JOIN operacion a ON a.id = c.id_operacion
         INNER JOIN producto p ON p.id = a.id_seguro_producto
-        INNER JOIN cliente cl ON cl.codigocliente = a.id_cliente
-        WHERE a.id=$1`; 
+        INNER JOIN clientes cl ON cl.codigocliente = a.id_cliente
+        WHERE c.id_operacion=$1`; 
     const result = await pool.query(query, [id]);
     return result.rows[0];
   },
