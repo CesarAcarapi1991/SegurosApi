@@ -4,7 +4,7 @@ const Operacion = {
   create: async (data) => {
   const {
     nro_poliza, id_cliente, id_seguro_producto,
-    peso, estatura, edad, estado = 1, usuario_creacion
+    peso, estatura, estado = 1, usuario_creacion
   } = data;
 
   // 1. Buscar el certificado según el producto
@@ -25,7 +25,7 @@ const Operacion = {
 
   // 2. Buscar el cliente
   const clienteQuery = `
-    SELECT *
+    SELECT EXTRACT(YEAR FROM AGE(CURRENT_DATE, fechanacimiento)) AS edad, *
     FROM clientes
     WHERE codigocliente = $1
     LIMIT 1
@@ -51,18 +51,19 @@ const Operacion = {
   const estadocivil = clienteResult.rows[0].estadocivil;
   const fechavencimiento = clienteResult.rows[0].fechavencimiento;
   const numerocelular = clienteResult.rows[0].numerocelular;
-
-
+  const correoelectronico = clienteResult.rows[0].correoelectronico;
+  const edad = clienteResult.rows[0].edad;
+  
   // 2. Insertar en operacion
   const query = `
     INSERT INTO operacion (
       nro_poliza, id_cliente, id_seguro_producto, id_certificado,
       primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
       tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
-      fechanacimiento, estadocivil, fechavencimiento, numerocelular,
-      peso, estatura, edad, estado, usuario_creacion
+      fechanacimiento, estadocivil, fechavencimiento, numerocelular, correoelectronico,
+      edad, peso, estatura, edad, estado, usuario_creacion
     ) VALUES (
-      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24
+      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26
     ) RETURNING *;
   `;
 
@@ -70,8 +71,8 @@ const Operacion = {
     nro_poliza, id_cliente, id_seguro_producto, id_certificado,
     primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
     tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
-    fechanacimiento, estadocivil, fechavencimiento, numerocelular,
-    peso, estatura, edad, estado, usuario_creacion
+    fechanacimiento, estadocivil, fechavencimiento, numerocelular, correoelectronico,
+    edad, peso, estatura, edad, estado, usuario_creacion
   ];
 
   const result = await pool.query(query, values);
