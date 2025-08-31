@@ -178,7 +178,7 @@ const Operacion = {
       FROM operacion a
       INNER JOIN clientes c ON a.id_cliente = c.codigocliente
       INNER JOIN producto p ON a.id_seguro_producto = p.id
-      INNER JOIN empresa e ON p.empresa_id = e.id
+      INNER JOIN empresa_aseguradora e ON p.empresa_id = e.id
       WHERE a.fecha_creacion BETWEEN $1::date AND ($2::date + INTERVAL '1 day' - INTERVAL '1 millisecond')
     `;
 
