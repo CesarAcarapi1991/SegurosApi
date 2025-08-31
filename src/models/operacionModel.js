@@ -61,9 +61,9 @@ const Operacion = {
       primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
       tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
       fechanacimiento, estadocivil, fechavencimiento, numerocelular, correoelectronico,
-      edad, peso, estatura, edad, estado, usuario_creacion
+      peso, estatura, edad, estado, usuario_creacion
     ) VALUES (
-      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26
+      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25
     ) RETURNING *;
   `;
 
@@ -72,7 +72,7 @@ const Operacion = {
     primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
     tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
     fechanacimiento, estadocivil, fechavencimiento, numerocelular, correoelectronico,
-    edad, peso, estatura, edad, estado, usuario_creacion
+    peso, estatura, edad, estado, usuario_creacion
   ];
 
   const result = await pool.query(query, values);
