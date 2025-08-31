@@ -1,49 +1,33 @@
 const pool = require('../config/db');
 
 const Cobro = {
+  // Crear cobro
   create: async (data) => {
     const { id_operacion, tipo_pago, monto_recibido, total, cuenta, usuario_creacion } = data;
-    const client = await pool.connect();
+    const query = `
+      INSERT INTO cobro (id_operacion, tipo_pago, monto_recibido, total, cuenta, estado, usuario_creacion)
+      VALUES ($1, $2, $3, $4, $5, 1, $6)
+      RETURNING *`;
+    const values = [id_operacion, tipo_pago, monto_recibido, total, cuenta, usuario_creacion];
+    const result = await pool.query(query, values);
 
-    try {
-      await client.query('BEGIN');
+    const seriesQuery = `
+      SELECT *
+      FROM series
+      WHERE id = $1
+      LIMIT 1
+    `;
+    const seriesResult = await pool.query(seriesQuery, [1]);
+    const nro_serial = seriesResult.rows[0].nro_serial + 1;
+    
+    const querySeries = `
+      UPDATE series
+      SET nro_serial=$1
+      WHERE id=1 RETURNING *`;
+    const valuesSeries = [nro_serial];
+    await pool.query(querySeries, valuesSeries);
 
-      // 1️⃣ Incrementar serial y obtener el nuevo número
-      const serialResult = await client.query(
-        `UPDATE series
-         SET nro_serial = nro_serial + 1
-         WHERE id = $1
-         RETURNING nro_serial`,
-        [1]
-      );
-      const serial = serialResult.rows[0].nro_serial;
-
-      // 2️⃣ Insertar el cobro con el nro_serial como referencia
-      const insertCobroQuery = `
-        INSERT INTO cobro (id_operacion, tipo_pago, monto_recibido, total, cuenta, usuario_creacion)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *;
-      `;
-      const insertValues = [id_operacion, tipo_pago, monto_recibido, total, cuenta, usuario_creacion];
-      const insertResult = await client.query(insertCobroQuery, insertValues);
-
-      // 3️⃣ Actualizar la operacion con el nro_poliza generado
-      await client.query(
-        `UPDATE operacion
-         SET nro_poliza = $1
-         WHERE id = $2`,
-        [serial, id_operacion]
-      );
-
-      await client.query('COMMIT');
-      return insertResult.rows[0];
-
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    return result.rows[0];
   },
 };
 
