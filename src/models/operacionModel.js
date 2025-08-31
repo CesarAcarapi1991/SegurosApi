@@ -171,11 +171,14 @@ const Operacion = {
           ELSE 'Desconocido'
         END AS estado,
         p.producto,
-        CASE WHEN a.estado = 1 THEN 'S/D' ELSE a.fecha_creacion||'' END as fechavigencia
+        CASE WHEN a.estado = 1 THEN 'S/D' ELSE a.fecha_creacion||'' END as fechavigencia,
+      p.precio,
+      e.nombre AS empresa
 
       FROM operacion a
       INNER JOIN clientes c ON a.id_cliente = c.codigocliente
       INNER JOIN producto p ON a.id_seguro_producto = p.id
+      INNER JOIN empresa e ON p.empresa_id = e.id
       WHERE a.fecha_creacion BETWEEN $1::date AND ($2::date + INTERVAL '1 day' - INTERVAL '1 millisecond')
     `;
 
