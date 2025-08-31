@@ -4,9 +4,6 @@ const Operacion = {
   create: async (data) => {
   const {
     nro_poliza, id_cliente, id_seguro_producto,
-    primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
-    tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
-    fechanacimiento, estadocivil, fechavencimiento, numerocelular,
     peso, estatura, edad, estado = 1, usuario_creacion
   } = data;
 
@@ -25,6 +22,35 @@ const Operacion = {
 
   // Declarar y asignar id_certificado
   const id_certificado = certificadoResult.rows[0].id;
+
+  // 2. Buscar el cliente
+  const clienteQuery = `
+    SELECT id
+    FROM certificado
+    WHERE id_producto = $1
+    LIMIT 1
+  `;
+  const clienteResult = await pool.query(clienteQuery, [id_cliente]);
+
+  if (clienteResult.rows.length === 0) {
+    throw new Error("No se encontró cliente seleccionado");
+  }
+
+  const primernombre = clienteResult.rows[0].primernombre;
+  const segundonombre = clienteResult.rows[0].segundonombre;
+  const primerapellido = clienteResult.rows[0].primerapellido;
+  const segundoapellido = clienteResult.rows[0].segundoapellido;
+  const apellidocasada = clienteResult.rows[0].apellidocasada;
+  const tipodocumento = clienteResult.rows[0].tipodocumento;
+  const nrodocumento = clienteResult.rows[0].nrodocumento;
+  const complemento = clienteResult.rows[0].complemento;
+  const extension = clienteResult.rows[0].extension;
+  const nacionalidad = clienteResult.rows[0].nacionalidad;
+  const ocupacion = clienteResult.rows[0].ocupacion;
+  const fechanacimiento = clienteResult.rows[0].fechanacimiento;
+  const estadocivil = clienteResult.rows[0].estadocivil;
+  const numerocelular = clienteResult.rows[0].numerocelular;
+
 
   // 2. Insertar en operacion
   const query = `
