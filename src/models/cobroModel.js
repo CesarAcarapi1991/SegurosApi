@@ -88,7 +88,7 @@ const Cobro = {
         FROM cobro c
         INNER JOIN operacion a ON a.id = c.id_operacion
         INNER JOIN producto p ON p.id = a.id_seguro_producto
-        INNER JOIN cliente cl ON cl.id = a.id_cliente
+        INNER JOIN cliente cl ON cl.codigocliente = a.id_cliente
         WHERE a.id=$1`; 
     const result = await pool.query(query, [id]);
     return result.rows[0];
