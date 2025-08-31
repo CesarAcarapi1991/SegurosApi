@@ -10,6 +10,20 @@ const Operacion = {
       peso, estatura, edad, estado = 1, usuario_creacion
     } = data;
 
+    // 1. Buscar el certificado según el producto
+    const certificadoQuery = `
+      SELECT id
+      FROM certificado
+      WHERE id_producto = $1
+      LIMIT 1
+    `;
+    const certificadoResult = await pool.query(certificadoQuery, [id_seguro_producto]);
+
+    if (certificadoResult.rows.length === 0) {
+      throw new Error("No se encontró certificado para el producto seleccionado");
+    }
+    id_certificado = certificadoResult.rows[0].id;
+
     const query = `
       INSERT INTO operacion (
         nro_poliza, id_cliente, id_seguro_producto, id_certificado,
