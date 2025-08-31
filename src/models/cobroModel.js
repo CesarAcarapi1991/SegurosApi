@@ -29,7 +29,7 @@ const Cobro = {
 
     const querySeries01 = `
       UPDATE operacion
-      SET nro_poliza=$1
+      SET nro_poliza=$1, estado=2
       WHERE id=$2 RETURNING *`;
     const valuesSeries01 = [nro_serial, id_operacion];
     await pool.query(querySeries01, valuesSeries01);
