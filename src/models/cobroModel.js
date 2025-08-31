@@ -27,6 +27,13 @@ const Cobro = {
     const valuesSeries = [nro_serial];
     await pool.query(querySeries, valuesSeries);
 
+    const querySeries01 = `
+      UPDATE operacion
+      SET nro_poliza=$1
+      WHERE id=$2 RETURNING *`;
+    const valuesSeries01 = [nro_serial, id_operacion];
+    await pool.query(querySeries01, valuesSeries01);
+
     return result.rows[0];
   },
 };
