@@ -126,43 +126,6 @@ const Operacion = {
     return result.rows[0];
   },
 
-  // findByFechaEstado: async (fecha_desde, fecha_hasta, estado) => {
-  //   // Query fija con filtros obligatorios
-  //   const query = `
-  //     SELECT 
-  //       a.id,
-  //       a.nro_poliza,
-  //       a.id_cliente,
-  //       c.primernombre || ' ' ||c.segundonombre || ' '  || c.primerapellido || ' ' || c.segundoapellido AS nombre_completo,
-  //       CASE
-  //         WHEN c.tipodocumento = 1 THEN c.nrodocumento || c.complemento || ' ' || c.extension
-  //         WHEN c.tipodocumento !=  1 THEN 'E-' || c.nrodocumento
-  //         ELSE 'Desconocido'
-  //       END AS nro_documento,
-  //       c.fechanacimiento,
-  //       a.id_seguro_producto,
-  //       CASE
-  //         WHEN a.estado = 1 THEN 'Generado'
-  //         WHEN a.estado = 2 THEN 'Vigente'
-  //         ELSE 'Desconocido'
-  //       END AS estado,
-  //       p.producto
-  //     FROM operacion a
-  //     inner join clientes c on a.id_cliente = c.codigocliente
-  //     inner join producto p on a.id_seguro_producto = p.id
-  //     WHERE a.fecha_creacion BETWEEN $1 AND $2
-  //   `;
-  //   if(estado != 0){
-  //     query = query + ' AND a.estado = $3';
-  //   }
-  //   query = query + ' ORDER BY id';
-
-  //   const values = [fecha_desde, fecha_hasta, estado];
-
-  //   const result = await pool.query(query, values);
-  //   return result.rows;
-  // },
-
   findByFechaEstado: async (fecha_desde, fecha_hasta, estado) => {
     // Query inicial
     let query = `
@@ -187,7 +150,7 @@ const Operacion = {
       FROM operacion a
       INNER JOIN clientes c ON a.id_cliente = c.codigocliente
       INNER JOIN producto p ON a.id_seguro_producto = p.id
-      WHERE a.fecha_creacion BETWEEN $1 AND $2
+      WHERE a.fecha_creacion BETWEEN $1::date AND ($2::date + INTERVAL '1 day' - INTERVAL '1 millisecond')
     `;
 
     if (estado != 0) {
