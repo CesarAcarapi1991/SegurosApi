@@ -193,7 +193,7 @@ const Operacion = {
         END AS estado,
         p.producto,
         CASE WHEN a.estado = 1 THEN 'S/D' ELSE a.fecha_creacion||'' END as fechavigencia,
-      p.precio,
+      a.precio,
       e.nombre AS empresa
 
       FROM operacion a
