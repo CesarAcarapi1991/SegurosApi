@@ -25,9 +25,9 @@ const Operacion = {
 
   // 2. Buscar el cliente
   const clienteQuery = `
-    SELECT id
-    FROM certificado
-    WHERE id_producto = $1
+    SELECT *
+    FROM clientes
+    WHERE codigocliente = $1
     LIMIT 1
   `;
   const clienteResult = await pool.query(clienteQuery, [id_cliente]);
