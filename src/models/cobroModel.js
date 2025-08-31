@@ -6,7 +6,7 @@ const Cobro = {
     const { id_operacion, tipo_pago, monto_recibido, total, cuenta, usuario_creacion } = data;
     const query = `
       INSERT INTO cobro (id_operacion, tipo_pago, monto_recibido, total, cuenta, estado, usuario_creacion)
-      VALUES ($1, $2, $3, $4, $5, 1, $6)
+      VALUES ($1, $2, $3, $4, $5, true, $6)
       RETURNING *`;
     const values = [id_operacion, tipo_pago, monto_recibido, total, cuenta, usuario_creacion];
     const result = await pool.query(query, values);
