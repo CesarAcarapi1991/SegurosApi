@@ -134,8 +134,8 @@ const Operacion = {
         a.nro_poliza,
         a.id_cliente,
         CASE 
-          WHEN c.tipodocumento = 1 THEN 'CARNET IDENTIDAD'
-          ELSE 'CARNET EXTRANJERIA'
+          WHEN c.tipodocumento = 1 THEN 'Carnet de Identidad'
+          ELSE 'Documento Extranjero'
         END AS tipo_documento,
         c.primernombre || ' ' || c.segundonombre || ' ' || c.primerapellido || ' ' || c.segundoapellido AS nombre_completo,
         CASE
