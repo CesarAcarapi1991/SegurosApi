@@ -49,6 +49,7 @@ const Operacion = {
   const ocupacion = clienteResult.rows[0].ocupacion;
   const fechanacimiento = clienteResult.rows[0].fechanacimiento;
   const estadocivil = clienteResult.rows[0].estadocivil;
+  const fechavencimiento = clienteResult.rows[0].fechavencimiento;
   const numerocelular = clienteResult.rows[0].numerocelular;
 
 
