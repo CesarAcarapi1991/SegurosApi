@@ -12,6 +12,7 @@ const usuarioRoutes = require('./routes/usuarioRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
 
 const operacionRoutes = require('./routes/operacionRoutes');
+const cobroRoutes = require('./routes/cobroRoutes');
 const beneficiarioRoutes = require('./routes/beneficiarioRoutes');
 const certificadoRoutes = require('./routes/certificadoRoutes');
 
@@ -32,6 +33,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/clientes', clienteRoutes);
 
 app.use('/api/operaciones', operacionRoutes);
+app.use('/api/cobro', cobroRoutes);
 app.use('/api/beneficiarios', beneficiarioRoutes);
 app.use('/api/certificados', certificadoRoutes);
 
