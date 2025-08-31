@@ -3,8 +3,8 @@ const router = express.Router();
 const cobroController = require('../controllers/cobroController');
 
 router.post('/', cobroController.createCobro);
-// router.get('/', cobroController.getEmpresas);
-// router.get('/:id', empresaController.getEmpresaById);
+//router.get('/', cobroController.getCobro);
+router.get('/:id', cobroController.getCobroById);
 // router.put('/:id', empresaController.updateEmpresa);
 // router.delete('/:id', empresaController.deleteEmpresa);
 

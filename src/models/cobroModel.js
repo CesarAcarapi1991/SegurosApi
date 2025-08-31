@@ -36,6 +36,63 @@ const Cobro = {
 
     return result.rows[0];
   },
+
+
+  findById: async (id) => {
+
+    let query = `SELECT 
+          a.*, 
+          1 as cantida,
+          p.producto as producto,
+
+          CASE when c.tipo_pago = 1 THEN 'Caja: Efectivo'
+               ELSE 'Debito: Cuenta Bancaria'
+          END AS tipo_pago,
+          c.monto_recibido,
+          c.total,
+          c.cuenta,
+          c.fecha_creacion as fecha_cobro,
+          a.nro_poliza,
+          a.id_cliente,
+          CASE 
+            WHEN cl.tipodocumento = 1 THEN 'Carnet de Identidad'
+            ELSE 'Documento Extranjero'
+          END AS tipo_documento,
+          COALESCE(c.primernombre, '') || ' ' || COALESCE(c.segundonombre, '') || ' ' || COALESCE(c.primerapellido, '') || ' ' || COALESCE(c.segundoapellido, '') AS nombre_completo,
+          CASE
+            WHEN cl.tipodocumento = 1 THEN cl.nrodocumento || ' ' || COALESCE(cl.complemento, '') || ' - ' || 
+            ( CASE  
+                WHEN cl.extension = 1 THEN 'LP'
+                WHEN cl.extension = 2 THEN 'OR'
+                WHEN cl.extension = 3 THEN 'SC'
+                WHEN cl.extension = 4 THEN 'PA'
+                WHEN cl.extension = 5 THEN 'BN'
+                WHEN cl.extension = 6 THEN 'CO'
+                WHEN cl.extension = 7 THEN 'CH'
+                WHEN cl.extension = 8 THEN 'PT'
+                WHEN cl.extension = 9 THEN 'TJ'
+                ELSE 'QR' END 
+            )
+            WHEN cl.tipodocumento != 1 THEN 'E-' || cl.nrodocumento
+            ELSE 'Desconocido'
+          END AS nro_documento,
+          cl.fechanacimiento,
+          CASE 
+            WHEN cl.estadocivil = 1 THEN 'Soltero(a)'
+            WHEN cl.estadocivil = 2 THEN 'Casado(a)'
+            WHEN cl.estadocivil = 3 THEN 'Divorciado(a)'
+            WHEN cl.estadocivil = 4 THEN 'Viudo(a)'
+            ELSE 'Soltero(a)'
+          END AS estado_civil
+
+        FROM cobro c
+        INNER JOIN operacion a ON a.id = c.id_operacion
+        INNER JOIN producto p ON p.id = a.id_seguro_producto
+        INNER JOIN cliente cl ON cl.id = a.id_cliente
+        WHERE a.id=$1`; 
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
+  },
 };
 
 module.exports = Cobro;
