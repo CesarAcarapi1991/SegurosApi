@@ -158,7 +158,7 @@ const Operacion = {
           WHEN c.tipodocumento = 1 THEN 'Carnet de Identidad'
           ELSE 'Documento Extranjero'
         END AS tipo_documento,
-        c.primernombre || ' ' || c.segundonombre || ' ' || c.primerapellido || ' ' || c.segundoapellido AS nombre_completo,
+        COALESCE(c.primernombre, '') || ' ' || COALESCE(c.segundonombre, '') || ' ' || COALESCE(c.primerapellido, '') || ' ' || COALESCE(c.segundoapellido, '') AS nombre_completo,
         CASE
           WHEN c.tipodocumento = 1 THEN c.nrodocumento || ' ' || COALESCE(c.complemento, '') || ' - ' || 
 		      ( CASE  
