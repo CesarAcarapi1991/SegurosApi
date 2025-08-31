@@ -2,60 +2,60 @@ const pool = require('../config/db');
 
 const Operacion = {
   create: async (data) => {
-  const {
-    nro_poliza, id_cliente, id_seguro_producto,
-    peso, estatura, estado = 1, usuario_creacion
-  } = data;
+    const {
+      nro_poliza, id_cliente, id_seguro_producto,
+      peso, estatura, estado = 1, usuario_creacion
+    } = data;
 
-  // 1. Buscar el certificado según el producto
-  const certificadoQuery = `
+    // 1. Buscar el certificado según el producto
+    const certificadoQuery = `
     SELECT id
     FROM certificado
     WHERE id_producto = $1
     LIMIT 1
   `;
-  const certificadoResult = await pool.query(certificadoQuery, [id_seguro_producto]);
+    const certificadoResult = await pool.query(certificadoQuery, [id_seguro_producto]);
 
-  if (certificadoResult.rows.length === 0) {
-    throw new Error("No se encontró certificado para el producto seleccionado");
-  }
+    if (certificadoResult.rows.length === 0) {
+      throw new Error("No se encontró certificado para el producto seleccionado");
+    }
 
-  // Declarar y asignar id_certificado
-  const id_certificado = certificadoResult.rows[0].id;
+    // Declarar y asignar id_certificado
+    const id_certificado = certificadoResult.rows[0].id;
 
-  // 2. Buscar el cliente
-  const clienteQuery = `
+    // 2. Buscar el cliente
+    const clienteQuery = `
     SELECT EXTRACT(YEAR FROM AGE(CURRENT_DATE, fechanacimiento)) AS edad, *
     FROM clientes
     WHERE codigocliente = $1
     LIMIT 1
   `;
-  const clienteResult = await pool.query(clienteQuery, [id_cliente]);
+    const clienteResult = await pool.query(clienteQuery, [id_cliente]);
 
-  if (clienteResult.rows.length === 0) {
-    throw new Error("No se encontró cliente seleccionado");
-  }
+    if (clienteResult.rows.length === 0) {
+      throw new Error("No se encontró cliente seleccionado");
+    }
 
-  const primernombre = clienteResult.rows[0].primernombre;
-  const segundonombre = clienteResult.rows[0].segundonombre;
-  const primerapellido = clienteResult.rows[0].primerapellido;
-  const segundoapellido = clienteResult.rows[0].segundoapellido;
-  const apellidocasada = clienteResult.rows[0].apellidocasada;
-  const tipodocumento = clienteResult.rows[0].tipodocumento;
-  const nrodocumento = clienteResult.rows[0].nrodocumento;
-  const complemento = clienteResult.rows[0].complemento;
-  const extension = clienteResult.rows[0].extension;
-  const nacionalidad = clienteResult.rows[0].nacionalidad;
-  const ocupacion = clienteResult.rows[0].ocupacion;
-  const fechanacimiento = clienteResult.rows[0].fechanacimiento;
-  const estadocivil = clienteResult.rows[0].estadocivil;
-  const fechavencimiento = clienteResult.rows[0].fechavencimiento;
-  const numerocelular = clienteResult.rows[0].numerocelular;
-  const correoelectronico = clienteResult.rows[0].correoelectronico;
-  const edad = clienteResult.rows[0].edad;
-  
-  // 2. Insertar en operacion
-  const query = `
+    const primernombre = clienteResult.rows[0].primernombre;
+    const segundonombre = clienteResult.rows[0].segundonombre;
+    const primerapellido = clienteResult.rows[0].primerapellido;
+    const segundoapellido = clienteResult.rows[0].segundoapellido;
+    const apellidocasada = clienteResult.rows[0].apellidocasada;
+    const tipodocumento = clienteResult.rows[0].tipodocumento;
+    const nrodocumento = clienteResult.rows[0].nrodocumento;
+    const complemento = clienteResult.rows[0].complemento;
+    const extension = clienteResult.rows[0].extension;
+    const nacionalidad = clienteResult.rows[0].nacionalidad;
+    const ocupacion = clienteResult.rows[0].ocupacion;
+    const fechanacimiento = clienteResult.rows[0].fechanacimiento;
+    const estadocivil = clienteResult.rows[0].estadocivil;
+    const fechavencimiento = clienteResult.rows[0].fechavencimiento;
+    const numerocelular = clienteResult.rows[0].numerocelular;
+    const correoelectronico = clienteResult.rows[0].correoelectronico;
+    const edad = clienteResult.rows[0].edad;
+
+    // 2. Insertar en operacion
+    const query = `
     INSERT INTO operacion (
       nro_poliza, id_cliente, id_seguro_producto, id_certificado,
       primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
@@ -67,17 +67,17 @@ const Operacion = {
     ) RETURNING *;
   `;
 
-  const values = [
-    nro_poliza, id_cliente, id_seguro_producto, id_certificado,
-    primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
-    tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
-    fechanacimiento, estadocivil, fechavencimiento, numerocelular, correoelectronico,
-    peso, estatura, edad, estado, usuario_creacion
-  ];
+    const values = [
+      nro_poliza, id_cliente, id_seguro_producto, id_certificado,
+      primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
+      tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
+      fechanacimiento, estadocivil, fechavencimiento, numerocelular, correoelectronico,
+      peso, estatura, edad, estado, usuario_creacion
+    ];
 
-  const result = await pool.query(query, values);
-  return result.rows[0];
-},
+    const result = await pool.query(query, values);
+    return result.rows[0];
+  },
 
 
   findAll: async () => {
@@ -133,20 +133,46 @@ const Operacion = {
         a.id,
         a.nro_poliza,
         a.id_cliente,
+        CASE 
+          WHEN c.tipodocumento = 1 THEN 'CARNET IDENTIDAD'
+          ELSE 'CARNET EXTRANJERIA'
+        END AS tipo_documento,
         c.primernombre || ' ' || c.segundonombre || ' ' || c.primerapellido || ' ' || c.segundoapellido AS nombre_completo,
         CASE
-          WHEN c.tipodocumento = 1 THEN c.nrodocumento || c.complemento || ' ' || c.extension
+          WHEN c.tipodocumento = 1 THEN c.nrodocumento || ' ' || COALESCE(c.complemento, '') || ' - ' || 
+		      ( CASE  
+              WHEN c.extension = 1 THEN 'LP'
+              WHEN c.extension = 2 THEN 'OR'
+              WHEN c.extension = 3 THEN 'SC'
+              WHEN c.extension = 4 THEN 'PA'
+              WHEN c.extension = 5 THEN 'BN'
+              WHEN c.extension = 6 THEN 'CO'
+              WHEN c.extension = 7 THEN 'CH'
+              WHEN c.extension = 8 THEN 'PT'
+              WHEN c.extension = 9 THEN 'TJ'
+              ELSE 'QR' END 
+          )
           WHEN c.tipodocumento != 1 THEN 'E-' || c.nrodocumento
           ELSE 'Desconocido'
         END AS nro_documento,
         c.fechanacimiento,
+        CASE 
+          WHEN c.estadocivil = 1 THEN 'Soltero(a)'
+          WHEN c.estadocivil = 2 THEN 'Casado(a)'
+          WHEN c.estadocivil = 3 THEN 'Divorciado(a)'
+          WHEN c.estadocivil = 4 THEN 'Viudo(a)'
+          ELSE 'Soltero(a)'
+        END AS estado_civil,
+        a.fecha_creacion,
         a.id_seguro_producto,
         CASE
           WHEN a.estado = 1 THEN 'Generado'
           WHEN a.estado = 2 THEN 'Vigente'
           ELSE 'Desconocido'
         END AS estado,
-        p.producto
+        p.producto,
+        CASE WHEN a.estado = 1 THEN 'S/D' ELSE a.fecha_creacion||'' END as fechavigencia
+
       FROM operacion a
       INNER JOIN clientes c ON a.id_cliente = c.codigocliente
       INNER JOIN producto p ON a.id_seguro_producto = p.id
