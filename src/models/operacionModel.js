@@ -201,7 +201,6 @@ const Operacion = {
       INNER JOIN producto p ON a.id_seguro_producto = p.id
       INNER JOIN empresa_aseguradora e ON p.empresa_id = e.id
       WHERE a.fecha_creacion BETWEEN $1::date AND ($2::date + INTERVAL '1 day' - INTERVAL '1 millisecond') 
-      ORDER BY a.id DESC
     `;
 
     if (estado != 0) {
