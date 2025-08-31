@@ -2,50 +2,55 @@ const pool = require('../config/db');
 
 const Operacion = {
   create: async (data) => {
-    const {
-      nro_poliza, id_cliente, id_seguro_producto, id_certificado,
-      primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
-      tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
-      fechanacimiento, estadocivil, fechavencimiento, numerocelular,
-      peso, estatura, edad, estado = 1, usuario_creacion
-    } = data;
+  const {
+    nro_poliza, id_cliente, id_seguro_producto,
+    primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
+    tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
+    fechanacimiento, estadocivil, fechavencimiento, numerocelular,
+    peso, estatura, edad, estado = 1, usuario_creacion
+  } = data;
 
-    // 1. Buscar el certificado según el producto
-    const certificadoQuery = `
-      SELECT id
-      FROM certificado
-      WHERE id_producto = $1
-      LIMIT 1
-    `;
-    const certificadoResult = await pool.query(certificadoQuery, [id_seguro_producto]);
+  // 1. Buscar el certificado según el producto
+  const certificadoQuery = `
+    SELECT id
+    FROM certificado
+    WHERE id_producto = $1
+    LIMIT 1
+  `;
+  const certificadoResult = await pool.query(certificadoQuery, [id_seguro_producto]);
 
-    if (certificadoResult.rows.length === 0) {
-      throw new Error("No se encontró certificado para el producto seleccionado");
-    }
-    id_certificado = certificadoResult.rows[0].id;
+  if (certificadoResult.rows.length === 0) {
+    throw new Error("No se encontró certificado para el producto seleccionado");
+  }
 
-    const query = `
-      INSERT INTO operacion (
-        nro_poliza, id_cliente, id_seguro_producto, id_certificado,
-        primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
-        tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
-        fechanacimiento, estadocivil, fechavencimiento, numerocelular,
-        peso, estatura, edad, estado, usuario_creacion
-      ) VALUES (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24
-      ) RETURNING *`;
+  // Declarar y asignar id_certificado
+  const id_certificado = certificadoResult.rows[0].id;
 
-    const values = [
+  // 2. Insertar en operacion
+  const query = `
+    INSERT INTO operacion (
       nro_poliza, id_cliente, id_seguro_producto, id_certificado,
       primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
       tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
       fechanacimiento, estadocivil, fechavencimiento, numerocelular,
       peso, estatura, edad, estado, usuario_creacion
-    ];
+    ) VALUES (
+      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24
+    ) RETURNING *;
+  `;
 
-    const result = await pool.query(query, values);
-    return result.rows[0];
-  },
+  const values = [
+    nro_poliza, id_cliente, id_seguro_producto, id_certificado,
+    primernombre, segundonombre, primerapellido, segundoapellido, apellidocasada,
+    tipodocumento, nrodocumento, complemento, extension, nacionalidad, ocupacion,
+    fechanacimiento, estadocivil, fechavencimiento, numerocelular,
+    peso, estatura, edad, estado, usuario_creacion
+  ];
+
+  const result = await pool.query(query, values);
+  return result.rows[0];
+},
+
 
   findAll: async () => {
     const result = await pool.query('SELECT * FROM operacion WHERE marcabaja=false ORDER BY id');
