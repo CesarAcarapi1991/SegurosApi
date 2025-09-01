@@ -208,7 +208,7 @@ const Operacion = {
       query += ' AND a.estado = $3';
     }
 
-    query += ' ORDER BY id';
+    query += ' ORDER BY id desc';
 
     const values = [fecha_desde, fecha_hasta];
     if (estado != 0) values.push(estado);
