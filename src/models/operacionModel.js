@@ -194,7 +194,8 @@ const Operacion = {
         p.producto,
         CASE WHEN a.estado = 1 THEN 'S/D' ELSE a.fecha_creacion||'' END as fechavigencia,
       a.precio,
-      e.nombre AS empresa
+      e.nombre AS empresa,
+      a.estado
 
       FROM operacion a
       INNER JOIN clientes c ON a.id_cliente = c.codigocliente
