@@ -3,8 +3,9 @@ const router = express.Router();
 const operacionController = require('../controllers/operacionController');
 
 //filtrar la lista de operaciones
-router.get('/filtrar', operacionController.findByFechaEstado);
 router.get('/reporte', operacionController.findByFechaEstadoReporte);
+router.get('/filtrar', operacionController.findByFechaEstado);
+
 
 router.post('/', operacionController.create);
 router.get('/', operacionController.findAll);
