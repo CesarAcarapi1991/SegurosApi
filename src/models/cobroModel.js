@@ -41,6 +41,7 @@ const Cobro = {
   findById: async (id) => {
 
     let query = `SELECT 
+          c.id as nro_comprobante,
           p.producto as producto,
 
           CASE when c.tipo_pago = 1 THEN 'Caja: Efectivo'
