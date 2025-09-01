@@ -269,7 +269,6 @@ SELECT
 		  WHEN a.estado = 3 THEN 'Cancelado'
 		  WHEN a.estado = 4 THEN 'Vencido'
 		  ELSE 'S/D' END as estado_desc
-	
 FROM operacion a
 INNER JOIN producto p ON a.id_seguro_producto = p.id
 INNER JOIN empresa_aseguradora e ON p.empresa_id = e.id
