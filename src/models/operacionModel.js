@@ -282,7 +282,7 @@ left JOIN cobro c ON c.id_operacion = a.id
       query += ' AND a.estado = $3';
     }
 
-    query += ' ORDER BY fecha_creacion';
+    query += ' ORDER BY a.fecha_creacion asc';
 
     const values = [fecha_desde, fecha_hasta];
     if (estado != 0) values.push(estado);
