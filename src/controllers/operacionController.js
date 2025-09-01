@@ -65,3 +65,24 @@ exports.findByFechaEstado = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.findByFechaEstadoReporte = async (req, res) => {
+  try {
+    const { fecha_desde, fecha_hasta, estado } = req.query;
+
+    // Validar que los filtros obligatorios estén presentes
+    if (!fecha_desde || !fecha_hasta || !estado) {
+      return res.status(400).json({ error: "fecha_desde, fecha_hasta y estado son obligatorios" });
+    }
+
+    const operaciones = await Operacion.findByFechaEstadoReporte(fecha_desde, fecha_hasta, estado);
+    // res.json({
+    //   success: true,
+    //   count: operaciones.length,
+    //   data: operaciones
+    // });
+    res.json(operaciones);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

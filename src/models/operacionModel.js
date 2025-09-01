@@ -217,6 +217,80 @@ const Operacion = {
     return result.rows;
   },
 
+
+  findByFechaEstadoReporte: async (fecha_desde, fecha_hasta, estado) => {
+    // Query inicial
+    let query = `
+SELECT 
+	a.id as nro_operacion,
+	a.nro_poliza,
+	e.nombre,
+	p.producto,
+	p.precio,
+	a.id_cliente,
+          CASE 
+            WHEN cl.tipodocumento = 1 THEN 'Carnet de Identidad'
+            ELSE 'Documento Extranjero'
+          END AS tipo_documento,
+          COALESCE(cl.primernombre, '') || ' ' || COALESCE(cl.segundonombre, '') || ' ' || COALESCE(cl.primerapellido, '') || ' ' || COALESCE(cl.segundoapellido, '') AS nombre_completo,
+          CASE
+            WHEN cl.tipodocumento = 1 THEN cl.nrodocumento || ' ' || COALESCE(cl.complemento, '') || ' - ' || 
+            ( CASE  
+                WHEN cl.extension = 1 THEN 'LP'
+                WHEN cl.extension = 2 THEN 'OR'
+                WHEN cl.extension = 3 THEN 'SC'
+                WHEN cl.extension = 4 THEN 'PA'
+                WHEN cl.extension = 5 THEN 'BN'
+                WHEN cl.extension = 6 THEN 'CO'
+                WHEN cl.extension = 7 THEN 'CH'
+                WHEN cl.extension = 8 THEN 'PT'
+                WHEN cl.extension = 9 THEN 'TJ'
+                ELSE 'QR' END 
+            )
+            WHEN cl.tipodocumento != 1 THEN 'E-' || cl.nrodocumento
+            ELSE 'Desconocido'
+          END AS nro_documento,
+          cl.fechanacimiento,
+          CASE 
+            WHEN cl.estadocivil = 1 THEN 'Soltero(a)'
+            WHEN cl.estadocivil = 2 THEN 'Casado(a)'
+            WHEN cl.estadocivil = 3 THEN 'Divorciado(a)'
+            WHEN cl.estadocivil = 4 THEN 'Viudo(a)'
+            ELSE 'Soltero(a)'
+          END AS estado_civil,
+		  CASE WHEN c.tipo_pago = 1 THEN 'CAJA'
+		  		ELSE 'DEBITO' END AS tipopago,
+		  c.cuenta,
+		  a.fecha_creacion as fechasolicitud,
+		  c.fecha_creacion as fechacobro,
+		  a.estado,
+		  CASE WHEN a.estado = 1 THEN 'Generado'
+		  WHEN a.estado = 2 THEN 'Vigente'
+		  WHEN a.estado = 3 THEN 'Cancelado'
+		  WHEN a.estado = 4 THEN 'Vencido'
+		  ELSE 'S/D' END as estado_desc
+	
+FROM operacion a
+INNER JOIN producto p ON a.id_seguro_producto = p.id
+INNER JOIN empresa_aseguradora e ON p.empresa_id = e.id
+INNER JOIN clientes cl ON cl.codigocliente = a.id_cliente
+left JOIN cobro c ON c.id_operacion = a.id
+      WHERE a.fecha_creacion BETWEEN $1::date AND ($2::date + INTERVAL '1 day' - INTERVAL '1 millisecond') 
+    `;
+
+    if (estado != 0) {
+      query += ' AND a.estado = $3';
+    }
+
+    query += ' ORDER BY fecha_creacion';
+
+    const values = [fecha_desde, fecha_hasta];
+    if (estado != 0) values.push(estado);
+
+    const result = await pool.query(query, values);
+    return result.rows;
+  },
+
 };
 
 module.exports = Operacion;
