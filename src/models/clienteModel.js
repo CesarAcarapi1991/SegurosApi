@@ -31,7 +31,36 @@ const Cliente = {
   // Obtener todos los clientes activos
   findAll: async () => {
     const query = `
-      SELECT *
+      SELECT *,
+      CASE 
+          WHEN c.tipodocumento = 1 THEN 'Carnet de Identidad'
+          ELSE 'Documento Extranjero'
+        END AS tipo_documento_desc,
+        COALESCE(c.primernombre, '') || ' ' || COALESCE(c.segundonombre, '') || ' ' || COALESCE(c.primerapellido, '') || ' ' || COALESCE(c.segundoapellido, '') AS nombre_completo,
+        CASE
+          WHEN c.tipodocumento = 1 THEN c.nrodocumento || ' ' || COALESCE(c.complemento, '') || ' - ' || 
+		      ( CASE  
+              WHEN c.extension = 1 THEN 'LP'
+              WHEN c.extension = 2 THEN 'OR'
+              WHEN c.extension = 3 THEN 'SC'
+              WHEN c.extension = 4 THEN 'PA'
+              WHEN c.extension = 5 THEN 'BN'
+              WHEN c.extension = 6 THEN 'CO'
+              WHEN c.extension = 7 THEN 'CH'
+              WHEN c.extension = 8 THEN 'PT'
+              WHEN c.extension = 9 THEN 'TJ'
+              ELSE 'QR' END 
+          )
+          WHEN c.tipodocumento != 1 THEN 'E-' || c.nrodocumento
+          ELSE 'Desconocido'
+        END AS nro_documento_desc,
+        CASE 
+          WHEN c.estadocivil = 1 THEN 'Soltero(a)'
+          WHEN c.estadocivil = 2 THEN 'Casado(a)'
+          WHEN c.estadocivil = 3 THEN 'Divorciado(a)'
+          WHEN c.estadocivil = 4 THEN 'Viudo(a)'
+          ELSE 'Soltero(a)'
+        END AS estado_civil_desc
       FROM clientes
       WHERE marcabaja = 0
       ORDER BY codigocliente`;
@@ -42,7 +71,36 @@ const Cliente = {
   // Obtener cliente por ID
   findById: async (id) => {
     const query = `
-      SELECT *
+      SELECT *,
+      CASE 
+          WHEN c.tipodocumento = 1 THEN 'Carnet de Identidad'
+          ELSE 'Documento Extranjero'
+        END AS tipo_documento_desc,
+        COALESCE(c.primernombre, '') || ' ' || COALESCE(c.segundonombre, '') || ' ' || COALESCE(c.primerapellido, '') || ' ' || COALESCE(c.segundoapellido, '') AS nombre_completo,
+        CASE
+          WHEN c.tipodocumento = 1 THEN c.nrodocumento || ' ' || COALESCE(c.complemento, '') || ' - ' || 
+		      ( CASE  
+              WHEN c.extension = 1 THEN 'LP'
+              WHEN c.extension = 2 THEN 'OR'
+              WHEN c.extension = 3 THEN 'SC'
+              WHEN c.extension = 4 THEN 'PA'
+              WHEN c.extension = 5 THEN 'BN'
+              WHEN c.extension = 6 THEN 'CO'
+              WHEN c.extension = 7 THEN 'CH'
+              WHEN c.extension = 8 THEN 'PT'
+              WHEN c.extension = 9 THEN 'TJ'
+              ELSE 'QR' END 
+          )
+          WHEN c.tipodocumento != 1 THEN 'E-' || c.nrodocumento
+          ELSE 'Desconocido'
+        END AS nro_documento_desc,
+        CASE 
+          WHEN c.estadocivil = 1 THEN 'Soltero(a)'
+          WHEN c.estadocivil = 2 THEN 'Casado(a)'
+          WHEN c.estadocivil = 3 THEN 'Divorciado(a)'
+          WHEN c.estadocivil = 4 THEN 'Viudo(a)'
+          ELSE 'Soltero(a)'
+        END AS estado_civil_desc
       FROM clientes
       WHERE codigocliente = $1`;
     const result = await pool.query(query, [id]);
