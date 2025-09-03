@@ -128,8 +128,7 @@ const Beneficiario = {
       SELECT 
         b.id_operacion,
         ROW_NUMBER() OVER (PARTITION BY b.id_operacion ORDER BY b.id) AS item,
-        (b.primer_nombre || ' ' || COALESCE(b.segundo_nombre,'') || ' ' ||
-         b.primer_apellido || ' ' || COALESCE(b.segundo_apellido,'')) AS nombre,
+        COALESCE(b.primer_nombre, '') || ' ' || COALESCE(b.segundo_nombre, '') || ' ' || COALESCE(b.primer_apellido, '') || ' ' || COALESCE(b.segundo_apellido, '') AS nombre,
         b.parentesco AS relacion,
         b.proporcion AS porcentaje
       FROM beneficiario b
